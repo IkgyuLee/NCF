@@ -79,4 +79,4 @@ for epoch in range(args.epoch):
     optimizer.step()
 
   HR, NDCG = metrics(model, test_dataloader, args.top_k, device)
-  print("HR: {:.3f}\tNDCG: {:.3f}".format(np.mean(HR), np.mean(NDCG)))
+  print("epoch: {}\tHR: {:.3f}\tNDCG: {:.3f}".format(epoch, np.mean(HR), np.mean(NDCG)))
