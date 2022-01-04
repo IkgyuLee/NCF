@@ -34,15 +34,15 @@ class MLP(nn.Module):
         self.predict_layer = nn.Linear(predict_size, 1)
         self.sigmoid_layer = nn.Sigmoid()
 
+        # weight 초기화
+        nn.init.normal_(self.user_embedding.weight, mean=0.0, std=0.01)
+        nn.init.normal_(self.item_embedding.weight, mean=0.0, std=0.01)
+
 
     def forward(self, users, items):
       # Embdding 해주기
       user_embedded = self.user_embedding(users)
       item_embedded = self.item_embedding(items)
-
-      # weight 초기화
-      user_embedded = torch.nn.init.normal_(user_embedded, mean=0.0, std=0.01)
-      item_embedded = torch.nn.init.normal_(item_embedded, mean=0.0, std=0.01)
 
       # user, item tensor concat
       vector = torch.cat([user_embedded, item_embedded], 1)
