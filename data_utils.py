@@ -80,8 +80,9 @@ class download_read_csv():
 
 
 class MovieLens(Dataset):
-    def __init__(self, ratings, ng_num):
+    def __init__(self, total_ratings ,ratings, ng_num):
         super(MovieLens, self).__init__()
+        self.total_ratings = total_ratings
         self.ratings = ratings
         self.ng_num = ng_num
         self.num_users, self.num_items = self.get_num()
@@ -110,7 +111,7 @@ class MovieLens(Dataset):
         rating column에 존재하는 value는 1로 치환한다.
         '''
         users, items, labels = [], [], []
-        user_item_set = set(zip(self.ratings['userId'], self.ratings['movieId']))
+        user_item_set = set(zip(self.total_ratings['userId'], self.total_ratings['movieId']))
 
         # negative feedback dataset 증가 비율
         negative_ratio = self.ng_num

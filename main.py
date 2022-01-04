@@ -31,14 +31,16 @@ args = parser.parse_args()
 root_path = "dataset"
 file_name = "ml-latest-small"
 #file_name = "ml-latest"
+#file_name = "ml-1m"
 file_type = ".zip"
 
 data = download_read_csv(root=root_path, filename=file_name, filetype=file_type, download=True)
+total_ratings = data.read_ratings_csv()
 train_ratings, test_ratings = data.data_processing()
 
 # 각각 Dataset 객체 할당
-train_data = MovieLens(ratings=train_ratings, ng_num=4)
-test_data = MovieLens(ratings=test_ratings, ng_num=99)
+train_data = MovieLens(total_ratings=total_ratings, ratings=train_ratings, ng_num=4)
+test_data = MovieLens(total_ratings=total_ratings, ratings=test_ratings, ng_num=99)
 
 num_users, num_items = train_data.get_num()
 
@@ -50,13 +52,13 @@ test_dataloader = DataLoader(dataset=test_data, batch_size=100, shuffle=False, n
 if args.model == 'MLP':
     model = MLP(num_users, num_items, args.num_factors, args.num_layers)
     model.to(device)
-    loss_function = nn.BCEWithLogitsLoss()
+    loss_function = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
 else:
     model = GMF(num_users, num_items, args.num_factors)
     model.to(device)
-    loss_function = nn.BCEWithLogitsLoss()
+    loss_function = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
 ########################### TRAINING #####################################
