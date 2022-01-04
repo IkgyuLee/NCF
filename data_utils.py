@@ -10,7 +10,7 @@ import torch
 from torch.utils.data import Dataset
 
 
-class download_read_csv():
+class Download_read_csv():
     def __init__(self, root, filename, filetype, download):
         self.root = root
         self.filename = filename
@@ -48,7 +48,6 @@ class download_read_csv():
         ratings = pd.read_csv(self.root + '/' + self.filename + '/' + 'ratings.csv')
         ratings = ratings.drop("timestamp", axis=1)
         ratings = sklearn.utils.shuffle(ratings)
-        print("ratings.csv Read Complete")
         return ratings
 
     def data_processing(self):
@@ -75,7 +74,6 @@ class download_read_csv():
         # stratified sampling
         train_ratings, test_ratings, y_train, y_test = train_test_split(x, y, test_size=0.2, stratify=y)
         '''
-
         return train_ratings, test_ratings
 
 

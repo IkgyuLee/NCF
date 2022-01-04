@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 import argparse
-from data_utils import download_read_csv, MovieLens
+from data_utils import Download_read_csv, MovieLens
 from evaluate import metrics
 from MLP import MLP
 from GMF import GMF
@@ -34,8 +34,9 @@ file_name = "ml-latest-small"
 #file_name = "ml-1m"
 file_type = ".zip"
 
-data = download_read_csv(root=root_path, filename=file_name, filetype=file_type, download=True)
+data = Download_read_csv(root=root_path, filename=file_name, filetype=file_type, download=True)
 total_ratings = data.read_ratings_csv()
+print("ratings.csv Read Complete")
 train_ratings, test_ratings = data.data_processing()
 
 # 각각 Dataset 객체 할당
