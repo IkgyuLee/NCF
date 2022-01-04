@@ -32,7 +32,7 @@ class MLP(nn.Module):
 
         predict_size = num_factors
         self.predict_layer = nn.Linear(predict_size, 1)
-        self.sigmoid_layer = nn.Sigmoid(())
+        self.sigmoid_layer = nn.Sigmoid()
 
 
     def forward(self, users, items):

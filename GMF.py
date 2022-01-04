@@ -14,7 +14,7 @@ class GMF(nn.Module):
         self.item_embedding = nn.Embedding(num_embeddings=num_items, embedding_dim=num_factors)
         predict_size = num_factors
         self.predict_layer = nn.Linear(predict_size, 1)
-        self.sigmoid_layer = nn.Sigmoid(())
+        self.sigmoid_layer = nn.Sigmoid()
 
     def forward(self, users, items):
       # Embdding 해주기

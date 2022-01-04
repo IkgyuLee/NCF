@@ -52,12 +52,14 @@ test_dataloader = DataLoader(dataset=test_data, batch_size=100, shuffle=False, n
 if args.model == 'MLP':
     model = MLP(num_users, num_items, args.num_factors, args.num_layers)
     model.to(device)
+    #loss_function = nn.BCEWithLogitsLossLoss()
     loss_function = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
 else:
     model = GMF(num_users, num_items, args.num_factors)
     model.to(device)
+    #loss_function = nn.BCEWithLogitsLossLoss()
     loss_function = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 

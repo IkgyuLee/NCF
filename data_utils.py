@@ -120,14 +120,18 @@ class MovieLens(Dataset):
             users.append(u)
             items.append(i)
             labels.append(1)
+
+            # visited check
+            visited_check_list = []
             # negative instance
             for i in range(negative_ratio):
                 # first item random choice
                 negative_item = np.random.choice(self.all_movieIds)
                 # 해당 item이 user와 interaction이 있었는지 확인하고, interaction이 있었다면 negative_item을 계속 랜덤하게 할당
-                while (u, negative_item) in user_item_set:
+                while (u, negative_item) in user_item_set or negative_item in visited_check_list:
                     negative_item = np.random.choice(self.all_movieIds)
                 users.append(u)
                 items.append(negative_item)
                 labels.append(0)
+                visited_check_list.append(negative_item)
         return torch.tensor(users), torch.tensor(items), torch.tensor(labels)
