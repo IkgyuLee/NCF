@@ -16,7 +16,7 @@ class NeuMF(nn.Module):
 
         """
         self.MLP = MLP(num_users, num_items, num_factors, num_layers, neumf)
-        self.GMF = GMF(num_users, num_items, num_factors, num_layers, neumf)
+        self.GMF = GMF(num_users, num_items, num_factors, neumf)
         self.predict_layer = nn.Sequential(
                                 nn.Linear(num_factors*2, 1),
                                 nn.Sigmoid()
