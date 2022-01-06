@@ -9,6 +9,7 @@ from data_utils import Download_read_csv, MovieLens
 from evaluate import metrics
 from MLP import MLP
 from GMF import GMF
+from NeuMF import NeuMF
 
 ############################# CONFIGURATION #############################
 os.environ['KMP_DUPLICATE_LIB_OK']=''
@@ -18,12 +19,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print('device:', device)
 
 parser = argparse.ArgumentParser(description='Select Parameters')
-parser.add_argument('-m', '--model', type=str, default='MLP', help='select among the following model,[MLP, GMF, NeuMF]')
-parser.add_argument('-nf', '--num_factors', type=int, default=8, help='number of predictive factors : [8, 16, 32, 64]')
-parser.add_argument('-nl', '--num_layers', type=int, default=3, help='number of hidden layers in MLP Model : [0, 1, 2, 3, 4]')
-parser.add_argument('-b', '--batch', type=int, default=128, help='batch size : [128, 256, 512, 1024]')
-parser.add_argument('-e', '--epoch', type=int, default=10, help='number of epochs')
-parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3, help='learning rate : [0.0001, 0.0005, 0.001, 0.005]')
+parser.add_argument('-m', '--model_name', type=str, default='MLP', help='select among the following model: [MLP, GMF, NeuMF]')
+parser.add_argument('-nf', '--num_factors', type=int, default=8, help='number of predictive factors: [8, 16, 32, 64]')
+parser.add_argument('-nl', '--num_layers', type=int, default=3, help='number of hidden layers in MLP Model: [0, 1, 2, 3, 4]')
+parser.add_argument('-b', '--batch', type=int, default=128, help='batch size: [128, 256, 512, 1024]')
+parser.add_argument('-e', '--epochs', type=int, default=10, help='number of epochs')
+parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3, help='learning rate: [0.0001, 0.0005, 0.001, 0.005]')
 parser.add_argument('-tk', '--top_k', type=int, default=10)
 args = parser.parse_args()
 
@@ -31,7 +32,6 @@ args = parser.parse_args()
 root_path = "dataset"
 file_name = "ml-latest-small"
 #file_name = "ml-latest"
-#file_name = "ml-1m"
 file_type = ".zip"
 
 data = Download_read_csv(root=root_path, filename=file_name, filetype=file_type, download=True)
@@ -50,22 +50,31 @@ train_dataloader = DataLoader(dataset=train_data, batch_size=args.batch, shuffle
 test_dataloader = DataLoader(dataset=test_data, batch_size=100, shuffle=False, num_workers=0)
 
 ########################### CREATE MODEL #################################
-if args.model == 'MLP':
-    model = MLP(num_users, num_items, args.num_factors, args.num_layers)
+if args.model_name == 'NeuMF':
+  neumf = True
+else:
+  neumf = False
+
+if args.model_name == 'MLP':
+    model = MLP(num_users, num_items, args.num_factors, args.num_layers, neumf)
     model.to(device)
-    #loss_function = nn.BCEWithLogitsLossLoss()
+    loss_function = nn.BCELoss()
+    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
+
+elif args.model_name == 'GMF':
+    model = GMF(num_users, num_items, args.num_factors, neumf)
+    model.to(device)
     loss_function = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
 else:
-    model = GMF(num_users, num_items, args.num_factors)
+    model = NeuMF(num_users, num_items, args.num_factors, args.num_layers, neumf)
     model.to(device)
-    #loss_function = nn.BCEWithLogitsLossLoss()
     loss_function = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
 ########################### TRAINING #####################################
-for epoch in range(args.epoch):
+for epoch in range(args.epochs):
   for user, item, label in train_dataloader:
     user = user.to(device)
     item = item.to(device)
