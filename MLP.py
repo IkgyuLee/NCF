@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class MLP(nn.Module):
-    def __init__(self, num_users, num_items, num_factors, num_layers, neumf):
+    def __init__(self, num_users, num_items, num_factors, num_layers, use_pretrain, neumf, pretrained_MLP=None):
         super(MLP, self).__init__()
         """
               num_users   : number of users
@@ -11,7 +11,9 @@ class MLP(nn.Module):
               num_layers  : number of hidden layers in MLP Model
               neumf       : True(Fusion MLP&GMF)/False(Only MLP)
         """
+        self.user_pretrain = use_pretrain
         self.neumf = neumf
+        self.pretrained_MLP = pretrained_MLP
 
         # Embedding 객체 생성
         self.user_embedding = nn.Embedding(num_embeddings=num_users,
@@ -44,11 +46,22 @@ class MLP(nn.Module):
         if self.neumf == False:
             predict_size = num_factors
             self.predict_layer = nn.Linear(predict_size, 1)
-            self.sigmoid_layer = nn.Sigmoid()
+            self.sigmoid = nn.Sigmoid()
 
-        # weight 초기화
-        nn.init.normal_(self.user_embedding.weight, mean=0.0, std=0.01)
-        nn.init.normal_(self.item_embedding.weight, mean=0.0, std=0.01)
+
+        if self.use_pretrain:
+            self.user_embedding.weight.data.copy_(
+                self.pretrained_MLP.user_embedding.weight)
+            self.item_embedding.weight.data.copy_(
+                self.pretrained_MLP.item_embedding.weight)
+            for layer, pretrained_layer in zip(self.MLP_model, self.pretrained_MLP.MLP_model):
+                if isinstance(layer, nn.Linear) and isinstance(pretrained_layer, nn.Linear):
+                    layer.weight.data.copy_(pretrained_layer.weight)
+                    layer.bias.data.copy_(pretrained_layer.bias)
+        else:
+            # weight 초기화
+            nn.init.normal_(self.user_embedding.weight, mean=0.0, std=0.01)
+            nn.init.normal_(self.item_embedding.weight, mean=0.0, std=0.01)
 
 
     def forward(self, users, items):
@@ -62,7 +75,7 @@ class MLP(nn.Module):
         if self.neumf == False:
             output_MLP = self.MLP_layers(vector)
             prediction = self.predict_layer(output_MLP)
-            sigmoid = self.sigmoid_layer(prediction)
+            sigmoid = self.sigmoid(prediction)
             return sigmoid.view(-1)
 
         else:

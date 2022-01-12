@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 import argparse
+import time
 from data_utils import Download_read_csv, MovieLens
 from evaluate import metrics
 from MLP import MLP
@@ -26,7 +27,19 @@ parser.add_argument('-b', '--batch', type=int, default=128, help='batch size: [1
 parser.add_argument('-e', '--epochs', type=int, default=10, help='number of epochs')
 parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3, help='learning rate: [0.0001, 0.0005, 0.001, 0.005]')
 parser.add_argument('-tk', '--top_k', type=int, default=10)
+parser.add_argument('-pr', '--use_pretrain', type=str, default='False', help='use pretrained model or not')
+parser.add_argument('-save', '--save_model', type=str, default='False', help='save trained model or not')
 args = parser.parse_args()
+
+print('Model Name: ', format(args.model_name))
+
+# argparse doesn't supprot boolean type
+use_pretrain = True if args.use_pretrain =='True' else False
+save_model = True if args.save_model == 'True' else False
+
+pretrain_dir = 'pretrain'
+if not os.path.exists(pretrain_dir):
+    os.makeidrs(pretrain_dir)
 
 ############################## PREPARE DATASET ##########################
 root_path = "dataset"
@@ -56,24 +69,43 @@ else:
     neumf = False
 
 if args.model_name == 'MLP':
-    model = MLP(num_users, num_items, args.num_factors, args.num_layers, neumf)
-    model.to(device)
-    loss_function = nn.BCELoss()
+    model = MLP(num_users, num_items, args.num_factors, args.num_layers, use_pretrain, neumf)
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
 elif args.model_name == 'GMF':
-    model = GMF(num_users, num_items, args.num_factors, neumf)
-    model.to(device)
-    loss_function = nn.BCELoss()
+    model = GMF(num_users, num_items, args.num_factors, use_pretrain, neumf)
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
-else:
-    model = NeuMF(num_users, num_items, args.num_factors, args.num_layers, neumf)
-    model.to(device)
-    loss_function = nn.BCELoss()
-    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
+else: # moel_name = 'NeuMF'
+    if use_pretrain:
+        GMF_dir = os.path.join(pretrain_dir, 'GMF.pth')
+        MLP_dir = os.path.join(pretrain_dir, 'MLP.pth')
+        pretrained_GMF = torch.load(GMF_dir)
+        pretrained_MLP = torch.load(MLP_dir)
+
+        # 신경망의 모든 매개변수를 고정합니다
+        for param in pretrained_GMF.parameters():
+            param.requires_grad = False
+
+        for param in pretrained_MLP.parameters():
+            param.requires_grad = False
+
+    else:
+        pretrained_GMF = None
+        pretrained_MLP = None
+
+    model = NeuMF(num_users, num_items, args.num_factors, args.num_layers, neumf, use_pretrain, pretrained_GMF, pretrained_MLP)
+    if not use_pretrain:
+        optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
+    else:
+        optimizer = optim.SGD(model.parameters(), lr=args.learning_rate)
+
+model.to(device)
+# loss function is Binary Cross Entropy Loss
+loss_function = nn.BCELoss()
 
 ########################### TRAINING #####################################
+start = time.time()
 for epoch in range(args.epochs):
     for user, item, label in train_dataloader:
         user = user.to(device)
@@ -90,5 +122,9 @@ for epoch in range(args.epochs):
     HR, NDCG = metrics(model, test_dataloader, args.top_k, device)
     print("epoch: {}\tHR: {:.3f}\tNDCG: {:.3f}".format(epoch+1, np.mean(HR), np.mean(NDCG)))
 
+if save_model:
+    pretrain_model_dir = os.path.join(pretrain_dir, args.model+'.pth')
+    torch.save(model, pretrain_model_dir)
 
-
+end = time.time()
+print(f'Training Time: {end-start:.5f}')
