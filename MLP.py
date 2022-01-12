@@ -11,7 +11,7 @@ class MLP(nn.Module):
               num_layers  : number of hidden layers in MLP Model
               neumf       : True(Fusion MLP&GMF)/False(Only MLP)
         """
-        self.user_pretrain = use_pretrain
+        self.use_pretrain = use_pretrain
         self.neumf = neumf
         self.pretrained_MLP = pretrained_MLP
 

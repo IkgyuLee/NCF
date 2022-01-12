@@ -39,7 +39,7 @@ save_model = True if args.save_model == 'True' else False
 
 pretrain_dir = 'pretrain'
 if not os.path.exists(pretrain_dir):
-    os.makeidrs(pretrain_dir)
+    os.makedirs(pretrain_dir)
 
 ############################## PREPARE DATASET ##########################
 root_path = "dataset"

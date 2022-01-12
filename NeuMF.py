@@ -21,10 +21,9 @@ class NeuMF(nn.Module):
 
         self.GMF = GMF(num_users, num_items, num_factors, use_pretrain, neumf, pretrained_GMF)
         self.MLP = MLP(num_users, num_items, num_factors, num_layers, use_pretrain, neumf, pretrained_MLP)
-        self.predict_layer = nn.Sequential(
-                                nn.Linear(num_factors*2, 1),
-                                nn.Sigmoid()
-                                )
+        self.predict_layer = nn.Linear(num_factors*2, 1)
+        self.sigmoid = nn.Sigmoid()
+
         if use_pretrain:
             predict_weight = torch.cat([
                 self.pretrained_GMF.predict_layer.weight,
@@ -35,12 +34,12 @@ class NeuMF(nn.Module):
             self.predict_layer.bias.data.copy_(0.5 * predict_bias)
         else:
             # weight 초기화
-            nn.init.normal_(self.user_embedding.weight, mean=0.0, std=0.01)
-            nn.init.normal_(self.item_embedding.weight, mean=0.0, std=0.01)
+            nn.init.normal_(self.predict_layer.weight, mean=0.0, std=0.01)
 
 
     def forward(self, users, items):
         concat_layer = torch.cat([self.MLP(users, items), self.GMF(users, items)], dim=1)
         output_NeuMF = self.predict_layer(concat_layer)
+        output_NeuMF = self.simoid(output_NeuMF)
 
         return output_NeuMF.view(-1)
