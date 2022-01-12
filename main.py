@@ -123,7 +123,7 @@ for epoch in range(args.epochs):
     print("epoch: {}\tHR: {:.3f}\tNDCG: {:.3f}".format(epoch+1, np.mean(HR), np.mean(NDCG)))
 
 if save_model:
-    pretrain_model_dir = os.path.join(pretrain_dir, args.model+'.pth')
+    pretrain_model_dir = os.path.join(pretrain_dir, args.model_name+'.pth')
     torch.save(model, pretrain_model_dir)
 
 end = time.time()
