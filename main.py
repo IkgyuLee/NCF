@@ -19,7 +19,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print('device:', device)
 
 parser = argparse.ArgumentParser(description='Select Parameters')
-parser.add_argument('-m', '--model_name', type=str, default='MLP', help='select among the following model: [MLP, GMF, NeuMF]')
+parser.add_argument('-m', '--model_name', type=str, default='MLP', help='select among the following model: [MLP, GMF, NeuMF, NeuMF_pre]')
 parser.add_argument('-nf', '--num_factors', type=int, default=8, help='number of predictive factors: [8, 16, 32, 64]')
 parser.add_argument('-nl', '--num_layers', type=int, default=3, help='number of hidden layers in MLP Model: [0, 1, 2, 3, 4]')
 parser.add_argument('-b', '--batch', type=int, default=128, help='batch size: [128, 256, 512, 1024]')
@@ -31,7 +31,6 @@ args = parser.parse_args()
 ############################## PREPARE DATASET ##########################
 root_path = "dataset"
 file_name = "ml-latest-small"
-#file_name = "ml-latest"
 file_type = ".zip"
 
 data = Download_read_csv(root=root_path, filename=file_name, filetype=file_type, download=True)
@@ -43,17 +42,18 @@ train_ratings, test_ratings = data.data_processing()
 train_data = MovieLens(total_ratings=total_ratings, ratings=train_ratings, ng_num=4)
 test_data = MovieLens(total_ratings=total_ratings, ratings=test_ratings, ng_num=99)
 
+# user, item의 unique 개수 불러오기
 num_users, num_items = train_data.get_num()
 
 # Datasetloader
-train_dataloader = DataLoader(dataset=train_data, batch_size=args.batch, shuffle=True, num_workers=0)
+train_dataloader = DataLoader(dataset=train_data, batch_size=args.batch, shuffle=True, num_workers=4)
 test_dataloader = DataLoader(dataset=test_data, batch_size=100, shuffle=False, num_workers=0)
 
 ########################### CREATE MODEL #################################
 if args.model_name == 'NeuMF':
-  neumf = True
+    neumf = True
 else:
-  neumf = False
+    neumf = False
 
 if args.model_name == 'MLP':
     model = MLP(num_users, num_items, args.num_factors, args.num_layers, neumf)
@@ -75,17 +75,20 @@ else:
 
 ########################### TRAINING #####################################
 for epoch in range(args.epochs):
-  for user, item, label in train_dataloader:
-    user = user.to(device)
-    item = item.to(device)
-    label = label.float().to(device)
+    for user, item, label in train_dataloader:
+        user = user.to(device)
+        item = item.to(device)
+        label = label.float().to(device)
 
-    # gradient 초기화
-    model.zero_grad()
-    prediction = model(user, item)
-    loss = loss_function(prediction, label)
-    loss.backward()
-    optimizer.step()
+        # gradient 초기화
+        model.zero_grad()
+        prediction = model(user, item)
+        loss = loss_function(prediction, label)
+        loss.backward()
+        optimizer.step()
 
-  HR, NDCG = metrics(model, test_dataloader, args.top_k, device)
-  print("epoch: {}\tHR: {:.3f}\tNDCG: {:.3f}".format(epoch, np.mean(HR), np.mean(NDCG)))
+    HR, NDCG = metrics(model, test_dataloader, args.top_k, device)
+    print("epoch: {}\tHR: {:.3f}\tNDCG: {:.3f}".format(epoch+1, np.mean(HR), np.mean(NDCG)))
+
+
+

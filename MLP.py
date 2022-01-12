@@ -52,19 +52,19 @@ class MLP(nn.Module):
 
 
     def forward(self, users, items):
-      # Embdding 해주기
-      user_embedded = self.user_embedding(users)
-      item_embedded = self.item_embedding(items)
+        # Embdding 해주기
+        user_embedded = self.user_embedding(users)
+        item_embedded = self.item_embedding(items)
 
-      # user, item tensor concat
-      vector = torch.cat([user_embedded, item_embedded], dim=1)
+        # user, item tensor concat
+        vector = torch.cat([user_embedded, item_embedded], dim=1)
 
-      if self.neumf == False:
-          output_MLP = self.MLP_layers(vector)
-          prediction = self.predict_layer(output_MLP)
-          sigmoid = self.sigmoid_layer(prediction)
-          return sigmoid.view(-1)
+        if self.neumf == False:
+            output_MLP = self.MLP_layers(vector)
+            prediction = self.predict_layer(output_MLP)
+            sigmoid = self.sigmoid_layer(prediction)
+            return sigmoid.view(-1)
 
-      else:
-          output_MLP = self.MLP_layers(vector)
-          return output_MLP
+        else:
+            output_MLP = self.MLP_layers(vector)
+            return output_MLP

@@ -26,19 +26,19 @@ class GMF(nn.Module):
         nn.init.normal_(self.item_embedding.weight, mean=0.0, std=0.01)
 
     def forward(self, users, items):
-      # Embdding 해주기
-      user_embedded = self.user_embedding(users)
-      item_embedded = self.item_embedding(items)
+        # Embdding 해주기
+        user_embedded = self.user_embedding(users)
+        item_embedded = self.item_embedding(items)
 
-      if self.neumf == False:
-          # element wise product
-          output_GMF = user_embedded * item_embedded
+        if self.neumf == False:
+            # element wise product
+            output_GMF = user_embedded * item_embedded
 
-          prediction = self.predict_layer(output_GMF)
-          sigmoid = self.sigmoid_layer(prediction)
-          return sigmoid.view(-1)
+            prediction = self.predict_layer(output_GMF)
+            sigmoid = self.sigmoid_layer(prediction)
+            return sigmoid.view(-1)
 
-      else:
-          # element wise product
-          output_GMF = user_embedded * item_embedded
-          return output_GMF
+        else:
+            # element wise product
+            output_GMF = user_embedded * item_embedded
+            return output_GMF

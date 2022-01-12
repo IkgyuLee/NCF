@@ -52,28 +52,17 @@ class Download_read_csv():
 
     def data_processing(self):
         train_ratings = self.ratings.copy()
-        test_ratings = pd.DataFrame()
+        test_ratings = self.ratings.sample(frac=1).drop_duplicates(['userId'])
+        tmp_dataframe = pd.concat([train_ratings, test_ratings])
+        train_ratings = tmp_dataframe.drop_duplicates(keep=False)
 
-        for i in self.ratings['userId'].unique().tolist():
-            for j in self.ratings['userId'].index:
-                if (self.ratings.iloc[j, 0] == i):
-                    test_ratings = pd.concat([test_ratings, pd.DataFrame(self.ratings.iloc[j, :]).T], axis=0)
-                    train_ratings = train_ratings.drop(j)
-                    break
+        # ignore warnings
+        np.warnings.filterwarnings('ignore')
+
         # explicit feedback -> implicit feedback
         train_ratings.loc[:, 'rating'] = 1
         test_ratings.loc[:, 'rating'] = 1
 
-        train_ratings = train_ratings.astype(int)
-        test_ratings = test_ratings.astype(int)
-
-        '''wrong train test split
-        x = self.ratings.copy()
-        y = self.ratings['userId']
-
-        # stratified sampling
-        train_ratings, test_ratings, y_train, y_test = train_test_split(x, y, test_size=0.2, stratify=y)
-        '''
         return train_ratings, test_ratings
 
 
