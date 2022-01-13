@@ -69,7 +69,7 @@ class MLP(nn.Module):
         item_embedded = self.item_embedding(items)
 
         # user, item tensor concat
-        vector = torch.cat([user_embedded, item_embedded], dim=1)
+        vector = torch.cat([user_embedded, item_embedded], dim=-1)
 
         if self.neumf == False:
             output_MLP = self.MLP_layers(vector)
