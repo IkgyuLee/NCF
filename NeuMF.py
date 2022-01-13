@@ -40,6 +40,6 @@ class NeuMF(nn.Module):
     def forward(self, users, items):
         concat_layer = torch.cat([self.MLP(users, items), self.GMF(users, items)], dim=1)
         output_NeuMF = self.predict_layer(concat_layer)
-        output_NeuMF = self.simoid(output_NeuMF)
+        output_NeuMF = self.sigmoid(output_NeuMF)
 
         return output_NeuMF.view(-1)
