@@ -47,7 +47,7 @@ class Download_read_csv():
     def read_ratings_csv(self):
         ratings = pd.read_csv(self.root + '/' + self.filename + '/' + 'ratings.csv')
         ratings = ratings.drop("timestamp", axis=1)
-        ratings = sklearn.utils.shuffle(ratings)
+        #ratings = sklearn.utils.shuffle(ratings)
         return ratings
 
     def data_processing(self):

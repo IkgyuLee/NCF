@@ -18,10 +18,9 @@ class GMF(nn.Module):
         self.user_embedding = nn.Embedding(num_embeddings=num_users, embedding_dim=num_factors)
         self.item_embedding = nn.Embedding(num_embeddings=num_items, embedding_dim=num_factors)
 
-        if self.neumf == False:
-            predict_size = num_factors
-            self.predict_layer = nn.Linear(predict_size, 1)
-            self.sigmoid = nn.Sigmoid()
+        predict_size = num_factors
+        self.predict_layer = nn.Linear(predict_size, 1)
+        self.sigmoid = nn.Sigmoid()
 
 
         if use_pretrain:
