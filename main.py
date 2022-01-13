@@ -13,8 +13,8 @@ from GMF import GMF
 from NeuMF import NeuMF
 
 ############################# CONFIGURATION #############################
-os.environ['KMP_DUPLICATE_LIB_OK']=''
-os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+#os.environ['KMP_DUPLICATE_LIB_OK']=''
+#os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print('device:', device)
@@ -33,8 +33,8 @@ args = parser.parse_args()
 
 print('Model Name: ', format(args.model_name))
 
-# argparse doesn't supprot boolean type
-use_pretrain = True if args.use_pretrain =='True' else False
+# argparse doesn't support boolean type
+use_pretrain = True if args.use_pretrain == 'True' else False
 save_model = True if args.save_model == 'True' else False
 
 pretrain_dir = 'pretrain'
@@ -69,11 +69,11 @@ else:
     neumf = False
 
 if args.model_name == 'MLP':
-    model = MLP(num_users, num_items, args.num_factors, args.num_layers, use_pretrain, neumf)
+    model = MLP(num_users=num_users, num_items=num_items, num_factors=args.num_factors, num_layers=args.num_layers, use_pretrain=use_pretrain, neumf=neumf)
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
 elif args.model_name == 'GMF':
-    model = GMF(num_users, num_items, args.num_factors, use_pretrain, neumf)
+    model = GMF(num_users=num_users, num_items=num_items, num_factors=args.num_factors, use_pretrain=use_pretrain, neumf=neumf)
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
 else: # moel_name = 'NeuMF'
@@ -94,7 +94,7 @@ else: # moel_name = 'NeuMF'
         pretrained_GMF = None
         pretrained_MLP = None
 
-    model = NeuMF(num_users, num_items, args.num_factors, args.num_layers, neumf, use_pretrain, pretrained_GMF, pretrained_MLP)
+    model = NeuMF(num_users=num_users, num_items=num_items, num_factors=args.num_factors, num_layers=args.num_layers, neumf=neumf, use_pretrain=use_pretrain, pretrained_GMF=pretrained_GMF, pretrained_MLP=pretrained_MLP)
     if not use_pretrain:
         optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
     else:
@@ -119,7 +119,7 @@ for epoch in range(args.epochs):
         loss.backward()
         optimizer.step()
 
-    HR, NDCG = metrics(model, test_dataloader, args.top_k, device)
+    HR, NDCG = metrics(model=model, test_loader=test_dataloader, top_k=args.top_k, device=device)
     print("epoch: {}\tHR: {:.3f}\tNDCG: {:.3f}".format(epoch+1, np.mean(HR), np.mean(NDCG)))
 
 if save_model:
