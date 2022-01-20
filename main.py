@@ -113,7 +113,8 @@ for epoch in range(args.epochs):
         label = label.float().to(device)
 
         # gradient 초기화
-        model.zero_grad()
+        #model.zero_grad()
+        optimizer.zero_grad()
         prediction = model(user, item)
         loss = loss_function(prediction, label)
         loss.backward()
