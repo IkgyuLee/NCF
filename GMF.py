@@ -29,6 +29,8 @@ class GMF(nn.Module):
             self.item_embedding.weight.data.copy_(
                 self.pretrained_GMF.item_embedding.weight)
         else:
+            if neumf:
+                nn.init.normal_(self.predict_layer.weight, mean=0.0, std=1e-2)
             # weight 초기화
             nn.init.normal_(self.user_embedding.weight, mean=0.0, std=0.01)
             nn.init.normal_(self.item_embedding.weight, mean=0.0, std=0.01)
