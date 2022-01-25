@@ -63,6 +63,9 @@ class MLP(nn.Module):
             # weight 초기화
             nn.init.normal_(self.user_embedding.weight, mean=0.0, std=0.01)
             nn.init.normal_(self.item_embedding.weight, mean=0.0, std=0.01)
+            for layer in self.MLP_layers:
+                if isinstance(layer,nn.Linear):
+                    nn.init.xavier_uniform_(layer.weight)
 
 
     def forward(self, users, items):

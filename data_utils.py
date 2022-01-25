@@ -98,7 +98,8 @@ class MovieLens(Dataset):
         rating column에 존재하는 value는 1로 치환한다.
         '''
         users, items, labels = [], [], []
-        user_item_set = set(zip(self.total_ratings['userId'], self.total_ratings['movieId']))
+        user_item_set = set(zip(self.ratings['userId'], self.ratings['movieId']))
+        total_user_item_set = set(zip(self.total_ratings['userId'], self.total_ratings['movieId']))
 
         # negative feedback dataset 증가 비율
         negative_ratio = self.ng_num
@@ -115,7 +116,7 @@ class MovieLens(Dataset):
                 # first item random choice
                 negative_item = np.random.choice(self.all_movieIds)
                 # 해당 item이 user와 interaction이 있었는지 확인하고, interaction이 있었다면 negative_item을 계속 랜덤하게 할당
-                while (u, negative_item) in user_item_set or negative_item in visited_check_list:
+                while (u, negative_item) in total_user_item_set or negative_item in visited_check_list:
                     negative_item = np.random.choice(self.all_movieIds)
                 users.append(u)
                 items.append(negative_item)
