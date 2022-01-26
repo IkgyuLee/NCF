@@ -20,11 +20,11 @@ I used MovieLens dataset(file size: 100K). If there is interaction between user 
 ``` 
 ## Neural Collaborative Filtering Result
 | **MovieLens 100K** |HR|NDCG| Runtime | epoch |learning rate|batchsize|predictive factor| the number of layer |
-|:------------------:|:---:|:---:|:-------:|:-----:|:---:|:---:|:---:|:-------------------:|
+|:------------------:|:--:|:---:|:-------:|:-----:|:---:|:---:|:---:|:-------------------:|
 |        GMF         |0.825|0.554|   2m    |  20   |0.001|256|8|          X          |
-|        MLP         |0.775|0.489|  2.8m   |  20   |0.001|256|8|          3          |
-|NeuMF(without pre-training)|0.828|0.567|   3m    |  20   |0.001|256|8|          3          |
-| NeuMF(with pre-training)  |0.915|0.609|  2.8m   |  20   |0.001|256|8|          X          |
+|        MLP         |0.825|0.559|  2.8m   |  20   |0.001|256|8|          3          |
+|NeuMF(without pre-training)|0.848|0.578|   3m    |  20   |0.001|256|8|          3          |
+| NeuMF(with pre-training)  |0.875|0.577|  2.6m   |  20   |0.001|256|8|          X          |
 
 
 ### Development Enviroment
