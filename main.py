@@ -20,11 +20,11 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print('device:', device)
 
 parser = argparse.ArgumentParser(description='Select Parameters')
-parser.add_argument('-m', '--model_name', type=str, default='MLP', help='select among the following model: [MLP, GMF, NeuMF, NeuMF_pre]')
+parser.add_argument('-m', '--model_name', type=str, default='MLP', help='select among the following model: [MLP, GMF, NeuMF]')
 parser.add_argument('-nf', '--num_factors', type=int, default=8, help='number of predictive factors: [8, 16, 32, 64]')
 parser.add_argument('-nl', '--num_layers', type=int, default=3, help='number of hidden layers in MLP Model: [0, 1, 2, 3, 4]')
-parser.add_argument('-b', '--batch', type=int, default=128, help='batch size: [128, 256, 512, 1024]')
-parser.add_argument('-e', '--epochs', type=int, default=10, help='number of epochs')
+parser.add_argument('-b', '--batch', type=int, default=256, help='batch size: [128, 256, 512, 1024]')
+parser.add_argument('-e', '--epochs', type=int, default=20, help='number of epochs')
 parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3, help='learning rate: [0.0001, 0.0005, 0.001, 0.005]')
 parser.add_argument('-tk', '--top_k', type=int, default=10)
 parser.add_argument('-pr', '--use_pretrain', type=str, default='False', help='use pretrained model or not')
@@ -76,7 +76,7 @@ elif args.model_name == 'GMF':
     model = GMF(num_users=num_users, num_items=num_items, num_factors=args.num_factors, use_pretrain=use_pretrain, neumf=neumf)
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
-else: # moel_name = 'NeuMF'
+elif args.model_name == 'NeuMF':
     if use_pretrain:
         GMF_dir = os.path.join(pretrain_dir, 'GMF.pth')
         MLP_dir = os.path.join(pretrain_dir, 'MLP.pth')

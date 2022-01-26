@@ -84,12 +84,12 @@ class MovieLens(Dataset):
         return self.users[index], self.items[index], self.labels[index]
 
     def get_num(self):
-        num_users = self.ratings['userId'].max() + 1
-        num_items = self.ratings['movieId'].max() + 1
+        num_users = self.total_ratings['userId'].max() + 1
+        num_items = self.total_ratings['movieId'].max() + 1
         return num_users, num_items
 
     def get_allmovieIds(self):
-        all_movieIds = self.ratings['movieId'].unique()
+        all_movieIds = self.total_ratings['movieId'].unique()
         return all_movieIds
 
     def negative_feedback_augmentation(self):
