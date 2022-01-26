@@ -19,11 +19,13 @@ I used MovieLens dataset(file size: 100K). If there is interaction between user 
     └── ml-latest-small.zip
 ``` 
 ## Neural Collaborative Filtering Result
-| **MovieLens 100K** |HR|NDCG|Runtime|epoch|learning rate|batchsize|predictive factor|the number of layer|
-|:------------------:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|        GMF         |0.438|0.207|47m|30|0.001|256|8|X|
-|        MLP         |0.510|0.261|1h|30|0.001|256|8|4|
-|NeuMF(without pre-training)|0.438|0.207|47m|30|0.001|256|8|X|
+| **MovieLens 100K** |HR|NDCG| Runtime | epoch |learning rate|batchsize|predictive factor| the number of layer |
+|:------------------:|:---:|:---:|:-------:|:-----:|:---:|:---:|:---:|:-------------------:|
+|        GMF         |0.825|0.554|   2m    |  20   |0.001|256|8|          X          |
+|        MLP         |0.775|0.489|  2.8m   |  20   |0.001|256|8|          3          |
+|NeuMF(without pre-training)|0.828|0.567|   3m    |  20   |0.001|256|8|          3          |
+| NeuMF(with pre-training)  |0.915|0.609|  2.8m   |  20   |0.001|256|8|          X          |
+
 
 ### Development Enviroment
 - OS: Max OS X
@@ -32,13 +34,16 @@ I used MovieLens dataset(file size: 100K). If there is interaction between user 
 
 ### Quick Start Example
 ```bash
-python main.py -m GMF -nf 8 -b 512 -e 20 -lr 0.001 -tk 10
+python main.py -m GMF -nf 8 -b 256 -e 20 -lr 0.001 -tk 10 -pr False -save True
 ``` 
 ```bash
-python main.py -m MLP -nf 8 -nl 4 -b 512 -e 20 -lr 0.001 -tk 10
+python main.py -m MLP -nf 8 -nl 3 -b 256 -e 20 -lr 0.001 -tk 10 -pr False -save True
 ```  
 ```bash
-python main.py -m NeuMF -nf 8 -nl 4 -b 512 -e 20 -lr 0.001 -tk 10
+python main.py -m NeuMF -nf 8 -nl 3 -b 256 -e 20 -lr 0.001 -tk 10 -pr False
+```  
+```bash
+python main.py -m NeuMF -nf 8 -nl 3 -b 256 -e 20 -lr 0.001 -tk 10 -pr True
 ```  
 ### Reference
 paper : [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031)
