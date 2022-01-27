@@ -10,7 +10,7 @@ class GMF(nn.Module):
               num_factors : number of predictive factors
               neumf       : True(Fusion MLP&GMF)/False(Only MLP)
         """
-        self.user_pretrain = use_pretrain
+        self.use_pretrain = use_pretrain
         self.neumf = neumf
         self.pretrained_GMF = pretrained_GMF
 
@@ -21,7 +21,6 @@ class GMF(nn.Module):
         predict_size = num_factors
         self.predict_layer = nn.Linear(predict_size, 1)
         self.sigmoid = nn.Sigmoid()
-
 
         if use_pretrain:
             self.user_embedding.weight.data.copy_(

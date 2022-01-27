@@ -48,7 +48,7 @@ class MLP(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
 
-        if self.use_pretrain:
+        if use_pretrain:
             self.user_embedding.weight.data.copy_(
                 self.pretrained_MLP.user_embedding.weight)
             self.item_embedding.weight.data.copy_(
