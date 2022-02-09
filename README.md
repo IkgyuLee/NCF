@@ -48,7 +48,7 @@ python main.py -m NeuMF -nf 8 -nl 3 -b 256 -e 20 -lr 0.001 -tk 10 -pr True
 ### Reference
 paper : [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031)
 
-review written in korean : [Review](https://ikgyu-lee.notion.site/WWW-2017-Neural-Collaborative-Filtering-a9b9f9dee46a4c289536570ddd08e5f8)
+review written in korean : [Review](https://ikgyu-lee.github.io/2022/02/08/Neural_Collaborative_Filtering.html)
 
 Neural Collaborative Filtering with MovieLens in torch
 
